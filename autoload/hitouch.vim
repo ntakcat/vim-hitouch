@@ -77,40 +77,48 @@ endfunction
 
 function! hitouch#Brightness(percent)
     for l in split(execute('highlight'), '\n')
-	let n = substitute(l, '^\(\w*\).*$', '\1', '')
-	if n != ''
-	    call hitouch#BrightnessGroup(n, 'fg', a:percent)
-	    call hitouch#BrightnessGroup(n, 'bg', a:percent)
+	if match(l, 'cleared') == -1 && match(l, 'links') == -1
+	    let n = substitute(l, '^\(\w*\).*$', '\1', '')
+	    if n != ''
+		call hitouch#BrightnessGroup(n, 'fg', a:percent)
+		call hitouch#BrightnessGroup(n, 'bg', a:percent)
+	    endif
 	endif
     endfor
 endfunction
 
 function! hitouch#Darkness(percent)
     for l in split(execute('highlight'), '\n')
-	let n = substitute(l, '^\(\w*\).*$', '\1', '')
-	if n != ''
-	    call hitouch#DarknessGroup(n, 'fg', a:percent)
-	    call hitouch#DarknessGroup(n, 'bg', a:percent)
+	if match(l, 'cleared') == -1 && match(l, 'links') == -1
+	    let n = substitute(l, '^\(\w*\).*$', '\1', '')
+	    if n != ''
+		call hitouch#DarknessGroup(n, 'fg', a:percent)
+		call hitouch#DarknessGroup(n, 'bg', a:percent)
+	    endif
 	endif
     endfor
 endfunction
 
 function! hitouch#Grayscale(percent)
     for l in split(execute('highlight'), '\n')
-	let n = substitute(l, '^\(\w*\).*$', '\1', '')
-	if n != ''
-	    call hitouch#GrayscaleGroup(n, 'fg', a:percent)
-	    call hitouch#GrayscaleGroup(n, 'bg', a:percent)
+	if match(l, 'cleared') == -1 && match(l, 'links') == -1
+	    let n = substitute(l, '^\(\w*\).*$', '\1', '')
+	    if n != ''
+		call hitouch#GrayscaleGroup(n, 'fg', a:percent)
+		call hitouch#GrayscaleGroup(n, 'bg', a:percent)
+	    endif
 	endif
     endfor
 endfunction
 
 function! hitouch#Kelvin(kelvin)
     for l in split(execute('highlight'), '\n')
-	let n = substitute(l, '^\(\w*\).*$', '\1', '')
-	if n != ''
-	    call hitouch#KelvinGroup(n, 'fg', a:kelvin)
-	    call hitouch#KelvinGroup(n, 'bg', a:kelvin)
+	if match(l, 'cleared') == -1 && match(l, 'links') == -1
+	    let n = substitute(l, '^\(\w*\).*$', '\1', '')
+	    if n != ''
+		call hitouch#KelvinGroup(n, 'fg', a:kelvin)
+		call hitouch#KelvinGroup(n, 'bg', a:kelvin)
+	    endif
 	endif
     endfor
 endfunction
