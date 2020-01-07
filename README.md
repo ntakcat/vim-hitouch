@@ -30,12 +30,12 @@ hitouch#GrayscaleGroupBG(group, percent)
 
 ## :Kelvin ##
 Change the color temperature. Centering on 6500, the value is red when the value is small and blue when it is large.
-hitouch#Kelvin(percent)
-hitouch#KelvinFG(percent)
-hitouch#KelvinBG(percent)
-hitouch#KelvinGroup(group, percent)
-hitouch#KelvinGroupFG(group, percent)
-hitouch#KelvinGroupBG(group, percent)
+hitouch#Kelvin(Kelvin)
+hitouch#KelvinFG(Kelvin)
+hitouch#KelvinBG(Kelvin)
+hitouch#KelvinGroup(group, Kelvin)
+hitouch#KelvinGroupFG(group, Kelvin)
+hitouch#KelvinGroupBG(group, Kelvin)
 
 ## :Nearest ##
 Approximates the specified color. If you apply half the pure blue ('#0000FF', 50).
