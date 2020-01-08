@@ -46,7 +46,7 @@ hitouch#KelvinGroupBG(group, Kelvin)
 ```
 
 ## :Nearest ##
-Approximates the specified color. If you apply half the pure blue ('#0000FF', 50).
+Approximates the specified color. If you apply half the pure blue ('#0000FF', 50). 'rgb' is a '#' + six digit hexadecimal number.
 ```
 hitouch#Nearest(rgb, percent)
 hitouch#NearestFG(rgb, percent)
@@ -57,7 +57,7 @@ hitouch#NearestGroupBG(group, rgb, percent)
 ```
 
 ## :NearestR :NearestG :NearestB ##
-Affects only 'R'ed, 'G'reen, and 'B'lue.
+Affects only 'R'ed, 'G'reen, and 'B'lue. 'value' is a '#' + two digit hexadecimal number.
 ```
 hitouch#NearestR(value, percent)
 hitouch#NearestRFG(value, percent)
@@ -89,7 +89,7 @@ hitouch#NearestBGroupBG(group, value, percent)
 ```
 
 ## :Direct ##
-Use the given value directly. 'value' is a '#' + two digit hexadecimal number, or color name.
+Use the given value directly. 'value' is a '#' + six digit hexadecimal number, or color name.
 ```
 hitouch#Direct(value)
 hitouch#DirectFG(value)
@@ -100,7 +100,7 @@ hitouch#DirectGroupBG(group, value)
 ```
 
 ## :DirectR :DirectG :DirectB ##
-Same as above.
+Same as above. 'value' is a '#' + two digit hexadecimal number.
 ```
 hitouch#DirectR(value, percent)
 hitouch#DirectRFG(value, percent)
@@ -146,6 +146,66 @@ hitouch#GammaGroupBG(group, gamma)
 Even colors that look the same will not be the same if they are slightly different. In addition, since the current color is changed, the effect is strong as many times as the command is executed.
 
 You may need to run :packloadall beforehand.
+
+## Sample ##
+```
+function! GreenDisplay()
+    syntax off
+    syntax on
+    colorscheme default
+    call hitouch#DirectGroupFG('Normal', 'white')
+    call hitouch#DirectGroupBG('Normal', 'black')
+    call hitouch#Gamma(22)
+    call hitouch#Grayscale(100)
+    call hitouch#NearestFG('#00A000', 70)
+    call hitouch#NearestBG('#00A000', 10)
+    call hitouch#DirectGroupFG('Comment', '#00FF00')
+endfunction
+function! PlasmaDisplay()
+    syntax off
+    syntax on
+    colorscheme default
+    call hitouch#DirectGroupFG('Normal', 'white')
+    call hitouch#DirectGroupBG('Normal', 'black')
+    call hitouch#Gamma(32)
+    call hitouch#Grayscale(70)
+    call hitouch#NearestFG('#FF9020', 50)
+    call hitouch#NearestBG('#302010', 90)
+    call hitouch#NearestGroup('Error', '#FF0000', 50)
+    call hitouch#NearestGroup('WarningMsg', '#FFFF00', 50)
+    call hitouch#DarknessFG(20)
+    call hitouch#NearestGroupFG('Comment', '#FF9020', 98)
+endfunction
+function! MonoDisplay()
+    syntax off
+    syntax on
+    colorscheme default
+    call hitouch#DirectGroupFG('Normal', 'white')
+    call hitouch#DirectGroupBG('Normal', 'black')
+    call hitouch#Grayscale(100)
+endfunction
+function! CommentDisplay()
+    syntax off
+    syntax on
+    colorscheme default
+    call hitouch#DirectGroupFG('Normal', 'white')
+    call hitouch#DirectGroupBG('Normal', 'black')
+    call hitouch#Grayscale(100)
+    call hitouch#NearestGroupFG('Comment', '#3030C0', 60)
+endfunction
+syntax on
+silent! set termguicolors
+packloadall
+augroup colormanip
+    autocmd!
+    autocmd FileType c,cpp,h highlight link Delimiter Pmenu
+augroup END
+nnoremap 1<c-l> :syntax off \| syntax on<cr>
+nnoremap 2<c-l> :call GreenDisplay()<cr>
+nnoremap 3<c-l> :call PlasmaDisplay()<cr>
+nnoremap 4<c-l> :call MonoDisplay()<cr>
+nnoremap 5<c-l> :call CommentDisplay()<cr>
+```
 
 ## License ##
 Same as vim.
