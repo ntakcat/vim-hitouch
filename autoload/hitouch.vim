@@ -24,8 +24,16 @@ function! s:GetRGB(code)
     return [r, g, b]
 endfunction
 
+function! s:GetHex(code)
+    return str2nr(strcharpart(a:code, 1, 2), 16)
+endfunction
+
 function! s:Highlight(group, fgbg, r, g, b)
     execute(printf("highlight %s %s=#%02x%02x%02x", a:group, 'gui' . a:fgbg, a:r, a:g, a:b))
+endfunction
+
+function! s:HighlightString(group, fgbg, value)
+    execute(printf("highlight %s %s=%s", a:group, 'gui' . a:fgbg, a:value))
 endfunction
 
 function! hitouch#BrightnessGroup(group, percent)
@@ -106,12 +114,123 @@ function! hitouch#NearestGroupFGBG(group, fgbg, rgb, percent)
     call s:Highlight(a:group, a:fgbg, r, g, b)
 endfunction
 
-function! s:ForeachHighlight(func, percent)
+function! hitouch#NearestRGroup(group, value, percent)
+    call hitouch#NearestRGroupFGBG(a:group, 'fg', a:value, a:percent)
+    call hitouch#NearestRGroupFGBG(a:group, 'bg', a:value, a:percent)
+endfunction
+function! hitouch#NearestRGroupFGBG(group, fgbg, value, percent)
+    let value = s:GetHex(a:value)
+    let [r, g, b] = s:GetRGB(s:GetCode(a:group, a:fgbg))
+    if r > value
+	let r = r - (r - value) * a:percent / 100
+    else
+	let r = r + (value - r) * a:percent / 100
+    endif
+    call s:Highlight(a:group, a:fgbg, r, g, b)
+endfunction
+
+function! hitouch#NearestGGroup(group, value, percent)
+    call hitouch#NearestGGroupFGBG(a:group, 'fg', a:value, a:percent)
+    call hitouch#NearestGGroupFGBG(a:group, 'bg', a:value, a:percent)
+endfunction
+function! hitouch#NearestGGroupFGBG(group, fgbg, value, percent)
+    let value = s:GetHex(a:value)
+    let [r, g, b] = s:GetRGB(s:GetCode(a:group, a:fgbg))
+    if g > value
+	let g = g - (g - value) * a:percent / 100
+    else
+	let g = g + (value - g) * a:percent / 100
+    endif
+    call s:Highlight(a:group, a:fgbg, r, g, b)
+endfunction
+
+function! hitouch#NearestBGroup(group, value, percent)
+    call hitouch#NearestBGroupFGBG(a:group, 'fg', a:value, a:percent)
+    call hitouch#NearestBGroupFGBG(a:group, 'bg', a:value, a:percent)
+endfunction
+function! hitouch#NearestBGroupFGBG(group, fgbg, value, percent)
+    let value = s:GetHex(a:value)
+    let [r, g, b] = s:GetRGB(s:GetCode(a:group, a:fgbg))
+    if b > value
+	let b = b - (b - value) * a:percent / 100
+    else
+	let b = b + (value - b) * a:percent / 100
+    endif
+    call s:Highlight(a:group, a:fgbg, r, g, b)
+endfunction
+
+function! hitouch#GammaGroup(group, gamma)
+    call hitouch#GammaGroupFGBG(a:group, 'fg', a:gamma)
+    call hitouch#GammaGroupFGBG(a:group, 'bg', a:gamma)
+endfunction
+function! hitouch#GammaGroupFGBG(group, fgbg, gamma)
+    let [r, g, b] = s:GetRGB(s:GetCode(a:group, a:fgbg))
+    let r = float2nr(pow(r / 255.0, a:gamma / 10.0) * 255)
+    let g = float2nr(pow(g / 255.0, a:gamma / 10.0) * 255)
+    let b = float2nr(pow(b / 255.0, a:gamma / 10.0) * 255)
+    call s:Highlight(a:group, a:fgbg, r, g, b)
+endfunction
+
+function! hitouch#DirectGroup(group, value)
+    call hitouch#DirectGroupFGBG(a:group, 'fg', a:value)
+    call hitouch#DirectGroupFGBG(a:group, 'bg', a:value)
+endfunction
+function! hitouch#DirectGroupFGBG(group, fgbg, value)
+    if strcharpart(a:value, 0, 1) == '#'
+	let [r, g, b] = s:GetRGB(a:value)
+	call s:Highlight(a:group, a:fgbg, r, g, b)
+    else
+	call s:HighlightString(a:group, a:fgbg, a:value)
+    endi
+endfunction
+
+function! hitouch#DirectRGroup(group, value)
+    call hitouch#DirectRGroupFGBG(a:group, 'fg', a:value)
+    call hitouch#DirectRGroupFGBG(a:group, 'bg', a:value)
+endfunction
+function! hitouch#DirectRGroupFGBG(group, fgbg, value)
+    let [r, g, b] = s:GetRGB(s:GetCode(a:group, a:fgbg))
+    let r = s:GetHex(a:value)
+    call s:Highlight(a:group, a:fgbg, r, g, b)
+endfunction
+
+function! hitouch#DirectGGroup(group, value)
+    call hitouch#DirectGGroupFGBG(a:group, 'fg', a:value)
+    call hitouch#DirectGGroupFGBG(a:group, 'bg', a:value)
+endfunction
+function! hitouch#DirectGGroupFGBG(group, fgbg, value)
+    let [r, g, b] = s:GetRGB(s:GetCode(a:group, a:fgbg))
+    let g = s:GetHex(a:value)
+    call s:Highlight(a:group, a:fgbg, r, g, b)
+endfunction
+
+function! hitouch#DirectBGroup(group, value)
+    call hitouch#DirectBGroupFGBG(a:group, 'fg', a:value)
+    call hitouch#DirectBGroupFGBG(a:group, 'bg', a:value)
+endfunction
+function! hitouch#DirectBGroupFGBG(group, fgbg, value)
+    let [r, g, b] = s:GetRGB(s:GetCode(a:group, a:fgbg))
+    let b = s:GetHex(a:value)
+    call s:Highlight(a:group, a:fgbg, r, g, b)
+endfunction
+
+function! s:ForeachHighlight(func, arg1)
     for l in split(execute('highlight'), '\n')
 	if match(l, 'cleared') == -1 && match(l, 'links') == -1
 	    let n = substitute(l, '^\(\w*\).*$', '\1', '')
 	    if n != ''
-		call a:func(n, a:percent)
+		call a:func(n, a:arg1)
+	    endif
+	endif
+    endfor
+endfunction
+
+function! s:ForeachHighlight2(func, arg1, arg2)
+    for l in split(execute('highlight'), '\n')
+	if match(l, 'cleared') == -1 && match(l, 'links') == -1
+	    let n = substitute(l, '^\(\w*\).*$', '\1', '')
+	    if n != ''
+		call a:func(n, a:arg1, a:arg2)
 	    endif
 	endif
     endfor
@@ -152,6 +271,62 @@ function! hitouch#NearestGroupBG(group, rgb, percent)
     call hitouch#NearestGroupFGBG(a:group, 'bg', a:rgb, a:percent)
 endfunction
 
+function! hitouch#NearestRGroupFG(group, value, percent)
+    call hitouch#NearestRGroupFGBG(a:group, 'fg', a:value, a:percent)
+endfunction
+function! hitouch#NearestRGroupBG(group, value, percent)
+    call hitouch#NearestRGroupFGBG(a:group, 'bg', a:value, a:percent)
+endfunction
+
+function! hitouch#NearestGGroupFG(group, value, percent)
+    call hitouch#NearestGGroupFGBG(a:group, 'fg', a:value, a:percent)
+endfunction
+function! hitouch#NearestGGroupBG(group, value, percent)
+    call hitouch#NearestGGroupFGBG(a:group, 'bg', a:value, a:percent)
+endfunction
+
+function! hitouch#NearestBGroupFG(group, value, percent)
+    call hitouch#NearestBGroupFGBG(a:group, 'fg', a:value, a:percent)
+endfunction
+function! hitouch#NearestBGroupBG(group, value, percent)
+    call hitouch#NearestBGroupFGBG(a:group, 'bg', a:value, a:percent)
+endfunction
+
+function! hitouch#GammaGroupFG(group, gamma)
+    call hitouch#GammaGroupFGBG(a:group, 'fg', a:gamma)
+endfunction
+function! hitouch#GammaGroupBG(group, gamma)
+    call hitouch#GammaGroupFGBG(a:group, 'bg', a:gamma)
+endfunction
+
+function! hitouch#DirectGroupFG(group, value)
+    call hitouch#DirectGroupFGBG(a:group, 'fg', a:value)
+endfunction
+function! hitouch#DirectGroupBG(group, value)
+    call hitouch#DirectGroupFGBG(a:group, 'bg', a:value)
+endfunction
+
+function! hitouch#DirectRGroupFG(group, value)
+    call hitouch#DirectRGroupFGBG(a:group, 'fg', a:value)
+endfunction
+function! hitouch#DirectRGroupBG(group, value)
+    call hitouch#DirectRGroupFGBG(a:group, 'bg', a:value)
+endfunction
+
+function! hitouch#DirectGGroupFG(group, value)
+    call hitouch#DirectGGroupFGBG(a:group, 'fg', a:value)
+endfunction
+function! hitouch#DirectGGroupBG(group, value)
+    call hitouch#DirectGGroupFGBG(a:group, 'bg', a:value)
+endfunction
+
+function! hitouch#DirectBGroupFG(group, value)
+    call hitouch#DirectBGroupFGBG(a:group, 'fg', a:value)
+endfunction
+function! hitouch#DirectBGroupBG(group, value)
+    call hitouch#DirectBGroupFGBG(a:group, 'bg', a:value)
+endfunction
+
 function! hitouch#BrightnessFG(percent)
     call s:ForeachHighlight(function('hitouch#BrightnessGroupFG'), a:percent)
 endfunction
@@ -185,45 +360,112 @@ function! hitouch#Grayscale(percent)
     call s:ForeachHighlight(function('hitouch#GrayscaleGroupBG'), a:percent)
 endfunction
 
-function! hitouch#KelvinFG(percent)
-    call s:ForeachHighlight(function('hitouch#KelvinGroupFG'), a:percent)
+function! hitouch#KelvinFG(kelvin)
+    call s:ForeachHighlight(function('hitouch#KelvinGroupFG'), a:kelvin)
 endfunction
-function! hitouch#KelvinBG(percent)
-    call s:ForeachHighlight(function('hitouch#KelvinGroupBG'), a:percent)
+function! hitouch#KelvinBG(kelvin)
+    call s:ForeachHighlight(function('hitouch#KelvinGroupBG'), a:kelvin)
 endfunction
 function! hitouch#Kelvin(kelvin)
     call s:ForeachHighlight(function('hitouch#KelvinGroupFG'), a:kelvin)
     call s:ForeachHighlight(function('hitouch#KelvinGroupBG'), a:kelvin)
 endfunction
 
-function! hitouch#NearestFG(percent)
-    for l in split(execute('highlight'), '\n')
-	if match(l, 'cleared') == -1 && match(l, 'links') == -1
-	    let n = substitute(l, '^\(\w*\).*$', '\1', '')
-	    if n != ''
-		call hitouch#NearestGroupFG(n, a:rgb, a:percent)
-	    endif
-	endif
-    endfor
+function! hitouch#NearestFG(rgb, percent)
+    call s:ForeachHighlight2(function('hitouch#NearestGroupFG'), a:rgb, a:percent)
 endfunction
-function! hitouch#NearestBG(percent)
-    for l in split(execute('highlight'), '\n')
-	if match(l, 'cleared') == -1 && match(l, 'links') == -1
-	    let n = substitute(l, '^\(\w*\).*$', '\1', '')
-	    if n != ''
-		call hitouch#NearestGroupBG(n, a:rgb, a:percent)
-	    endif
-	endif
-    endfor
+function! hitouch#NearestBG(rgb, percent)
+    call s:ForeachHighlight2(function('hitouch#NearestGroupBG'), a:rgb, a:percent)
 endfunction
 function! hitouch#Nearest(rgb, percent)
-    for l in split(execute('highlight'), '\n')
-	if match(l, 'cleared') == -1 && match(l, 'links') == -1
-	    let n = substitute(l, '^\(\w*\).*$', '\1', '')
-	    if n != ''
-		call hitouch#NearestGroupFG(n, a:rgb, a:percent)
-		call hitouch#NearestGroupBG(n, a:rgb, a:percent)
-	    endif
-	endif
-    endfor
+    call s:ForeachHighlight2(function('hitouch#NearestGroupFG'), a:rgb, a:percent)
+    call s:ForeachHighlight2(function('hitouch#NearestGroupBG'), a:rgb, a:percent)
+endfunction
+
+function! hitouch#NearestRFG(value, percent)
+    call s:ForeachHighlight2(function('hitouch#NearestRGroupFG'), a:value, a:percent)
+endfunction
+function! hitouch#NearestRBG(value, percent)
+    call s:ForeachHighlight2(function('hitouch#NearestRGroupBG'), a:value, a:percent)
+endfunction
+function! hitouch#NearestR(value, percent)
+    call s:ForeachHighlight2(function('hitouch#NearestRGroupFG'), a:value, a:percent)
+    call s:ForeachHighlight2(function('hitouch#NearestRGroupBG'), a:value, a:percent)
+endfunction
+
+function! hitouch#NearestGFG(value, percent)
+    call s:ForeachHighlight2(function('hitouch#NearestGGroupFG'), a:value, a:percent)
+endfunction
+function! hitouch#NearestGBG(value, percent)
+    call s:ForeachHighlight2(function('hitouch#NearestGGroupBG'), a:value, a:percent)
+endfunction
+function! hitouch#NearestG(value, percent)
+    call s:ForeachHighlight2(function('hitouch#NearestGGroupFG'), a:value, a:percent)
+    call s:ForeachHighlight2(function('hitouch#NearestGGroupBG'), a:value, a:percent)
+endfunction
+
+function! hitouch#NearestBFG(value, percent)
+    call s:ForeachHighlight2(function('hitouch#NearestBGroupFG'), a:value, a:percent)
+endfunction
+function! hitouch#NearestBBG(value, percent)
+    call s:ForeachHighlight2(function('hitouch#NearestBGroupBG'), a:value, a:percent)
+endfunction
+function! hitouch#NearestB(value, percent)
+    call s:ForeachHighlight2(function('hitouch#NearestBGroupFG'), a:value, a:percent)
+    call s:ForeachHighlight2(function('hitouch#NearestBGroupBG'), a:value, a:percent)
+endfunction
+
+function! hitouch#GammaFG(gamma)
+    call s:ForeachHighlight(function('hitouch#GammaGroupFG'), a:gamma)
+endfunction
+function! hitouch#GammaBG(gamma)
+    call s:ForeachHighlight(function('hitouch#GammaGroupBG'), a:gamma)
+endfunction
+function! hitouch#Gamma(gamma)
+    call s:ForeachHighlight(function('hitouch#GammaGroupFG'), a:gamma)
+    call s:ForeachHighlight(function('hitouch#GammaGroupBG'), a:gamma)
+endfunction
+
+function! hitouch#DirectFG(value)
+    call s:ForeachHighlight(function('hitouch#DirectGroupFG'), a:value)
+endfunction
+function! hitouch#DirectBG(value)
+    call s:ForeachHighlight(function('hitouch#DirectGroupBG'), a:value)
+endfunction
+function! hitouch#Direct(value)
+    call s:ForeachHighlight(function('hitouch#DirectGroupFG'), a:value)
+    call s:ForeachHighlight(function('hitouch#DirectGroupBG'), a:value)
+endfunction
+
+function! hitouch#DirectRFG(value)
+    call s:ForeachHighlight(function('hitouch#DirectRGroupFG'), a:value)
+endfunction
+function! hitouch#DirectRBG(value)
+    call s:ForeachHighlight(function('hitouch#DirectRGroupBG'), a:value)
+endfunction
+function! hitouch#DirectR(value)
+    call s:ForeachHighlight(function('hitouch#DirectRGroupFG'), a:value)
+    call s:ForeachHighlight(function('hitouch#DirectRGroupBG'), a:value)
+endfunction
+
+function! hitouch#DirectGFG(value)
+    call s:ForeachHighlight(function('hitouch#DirectGGroupFG'), a:value)
+endfunction
+function! hitouch#DirectGBG(value)
+    call s:ForeachHighlight(function('hitouch#DirectGGroupBG'), a:value)
+endfunction
+function! hitouch#DirectG(value)
+    call s:ForeachHighlight(function('hitouch#DirectGGroupFG'), a:value)
+    call s:ForeachHighlight(function('hitouch#DirectGGroupBG'), a:value)
+endfunction
+
+function! hitouch#DirectBFG(value)
+    call s:ForeachHighlight(function('hitouch#DirectBGroupFG'), a:value)
+endfunction
+function! hitouch#DirectBBG(value)
+    call s:ForeachHighlight(function('hitouch#DirectBGroupBG'), a:value)
+endfunction
+function! hitouch#DirectB(value)
+    call s:ForeachHighlight(function('hitouch#DirectBGroupFG'), a:value)
+    call s:ForeachHighlight(function('hitouch#DirectBGroupBG'), a:value)
 endfunction
