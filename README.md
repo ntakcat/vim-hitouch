@@ -89,7 +89,7 @@ hitouch#NearestBGroupBG(group, value, percent)
 ```
 
 ## :Direct ##
-Use the given value directly. 'value' is a two digit hexadecimal number or color name.
+Use the given value directly. 'value' is a '#' + two digit hexadecimal number, or color name.
 ```
 hitouch#Direct(value)
 hitouch#DirectFG(value)
