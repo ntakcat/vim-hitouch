@@ -48,7 +48,7 @@ function! s:ForeachHighlight(match, name, fgbg, arg1)
     endfor
 endfunction
 
-function! s:ForeachHighlight(group, name, fgbg, arg1)
+function! s:ForeachHighlightDirect(group, name, fgbg, arg1)
     let s:f = function('s:' . a:name . 'Group', [a:group, a:fgbg, a:arg1])
     call s:f()
 endfunction
