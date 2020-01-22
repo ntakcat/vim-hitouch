@@ -48,7 +48,7 @@ function! s:ForeachHighlight(match, name, fgbg, arg1)
     endfor
 endfunction
 
-function! s:ForeachHighlightDirect(group, name, fgbg, arg1)
+function! s:ForeachHighlight(group, name, fgbg, arg1)
     let s:f = function('s:' . a:name . 'Group', [a:group, a:fgbg, a:arg1])
     call s:f()
 endfunction
@@ -379,15 +379,15 @@ function! s:DirectGroup(group, fgbg, value)
 	call s:HighlightString(a:group, a:fgbg, a:value)
     endif
 endfunction
-function! hitouch#Direct(value)
-    call hitouch#DirectFG(a:value)
-    call hitouch#DirectBG(a:value)
+function! hitouch#Direct(group, value)
+    call hitouch#DirectFG(a:group, a:value)
+    call hitouch#DirectBG(a:group, a:value)
 endfunction
-function! hitouch#DirectFG(value)
-    call hitouch#DirectGroupFG('.*', a:value)
+function! hitouch#DirectFG(group, value)
+    call hitouch#DirectGroupFG(a:group, a:value)
 endfunction
-function! hitouch#DirectBG(value)
-    call hitouch#DirectGroupBG('.*', a:value)
+function! hitouch#DirectBG(group, value)
+    call hitouch#DirectGroupBG(a:group, a:value)
 endfunction
 function! hitouch#DirectGroup(group, value)
     call hitouch#DirectGroupFG(a:group, a:value)
