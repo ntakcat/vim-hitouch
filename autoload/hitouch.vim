@@ -5,13 +5,13 @@ function! s:GetCode(group, fgbg)
     endif
     if code == ''
 	if a:fgbg == 'fg' && &g:background == 'dark'
-	    let code = '#ffffff'
+	    let code = '#C0C0C0'
 	elseif a:fgbg == 'bg' && &g:background == 'dark'
-	    let code = '#000000'
+	    let code = '#101010'
 	elseif a:fgbg == 'fg' && &g:background == 'light'
-	    let code = '#000000'
+	    let code = '#101010'
 	else
-	    let code = '#ffffff'
+	    let code = '#C0C0C0'
 	endif
     endif
     return code
@@ -488,4 +488,22 @@ function! hitouch#DirectBGroupBG(group, value)
 endfunction
 function! hitouch#DirectBGroupFGBG(group, fgbg, value)
     call s:ForeachHighlight(a:group, 'DirectB', a:fgbg, a:value)
+endfunction
+
+function! s:UnlinkGroup(group, fgbg)
+    let [r, g, b] = s:GetRGB(s:GetCode(a:group, a:fgbg))
+    call s:Highlight(a:group, a:fgbg, r, g ,b)
+endfunction
+function! hitouch#UnlinkGroup(group)
+    call hitouch#UnlinkGroupFG(a:group)
+    call hitouch#UnlinkGroupBG(a:group)
+endfunction
+function! hitouch#UnlinkGroupFG(group)
+    call hitouch#UnlinkGroupFGBG(a:group, 'fg')
+endfunction
+function! hitouch#UnlinkGroupBG(group)
+    call hitouch#UnlinkGroupFGBG(a:group, 'bg')
+endfunction
+function! hitouch#UnlinkGroupFGBG(group, fgbg)
+    call s:UnlinkGroup(a:group, a:fgbg)
 endfunction
