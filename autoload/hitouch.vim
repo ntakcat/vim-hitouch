@@ -36,6 +36,23 @@ function! s:HighlightString(group, fgbg, value)
     execute(printf("highlight %s %s=%s", a:group, 'gui' . a:fgbg, a:value))
 endfunction
 
+function! s:ForeachHighlightDirect(group, name, fgbg, arg1)
+    let s:f = function('s:' . a:name . 'Group', [a:group, a:fgbg, a:arg1])
+    call s:f()
+endfunction
+
+function! s:ForeachHighlight0(match, name, fgbg)
+    for l in split(execute('highlight'), '\n')
+	if match(l, 'cleared\|links') == -1
+	    let s = matchstr(substitute(l, '^\(\w*\).*$', '\1', ''), a:match)
+	    if s != ''
+		let s:f = function('s:' . a:name . 'Group', [s, a:fgbg])
+		call s:f()
+	    endif
+	endif
+    endfor
+endfunction
+
 function! s:ForeachHighlight(match, name, fgbg, arg1)
     for l in split(execute('highlight'), '\n')
 	if match(l, 'cleared\|links') == -1
@@ -46,11 +63,6 @@ function! s:ForeachHighlight(match, name, fgbg, arg1)
 	    endif
 	endif
     endfor
-endfunction
-
-function! s:ForeachHighlightDirect(group, name, fgbg, arg1)
-    let s:f = function('s:' . a:name . 'Group', [a:group, a:fgbg, a:arg1])
-    call s:f()
 endfunction
 
 function! s:ForeachHighlight2(match, name, fgbg, arg1, arg2)
@@ -506,4 +518,39 @@ function! hitouch#UnlinkGroupBG(group)
 endfunction
 function! hitouch#UnlinkGroupFGBG(group, fgbg)
     call s:UnlinkGroup(a:group, a:fgbg)
+endfunction
+
+function! s:CopyGroup(group, fgbg)
+    let g:hitouch_holding = s:GetCode(a:group, a:fgbg)
+endfunction
+function! hitouch#CopyGroup(group)
+    call hitouch#CopyGroupFG(a:group)
+    call hitouch#CopyGroupBG(a:group)
+endfunction
+function! hitouch#CopyGroupFG(group)
+    call hitouch#CopyGroupFGBG(a:group, 'fg')
+endfunction
+function! hitouch#CopyGroupBG(group)
+    call hitouch#CopyGroupFGBG(a:group, 'bg')
+endfunction
+function! hitouch#CopyGroupFGBG(group, fgbg)
+    call s:CopyGroup(a:group, a:fgbg)
+endfunction
+
+function! s:PasteGroup(group, fgbg)
+    let [r, g, b] = s:GetRGB(g:hitouch_holding)
+    call s:Highlight(a:group, a:fgbg, r, g, b)
+endfunction
+function! hitouch#PasteGroup(group)
+    call hitouch#PasteGroupFG(a:group)
+    call hitouch#PasteGroupBG(a:group)
+endfunction
+function! hitouch#PasteGroupFG(group)
+    call hitouch#PasteGroupFGBG(a:group, 'fg')
+endfunction
+function! hitouch#PasteGroupBG(group)
+    call hitouch#PasteGroupFGBG(a:group, 'bg')
+endfunction
+function! hitouch#PasteGroupFGBG(group, fgbg)
+    call s:ForeachHighlight0(a:group, 'Paste', a:fgbg)
 endfunction
