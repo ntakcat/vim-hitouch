@@ -33,7 +33,7 @@ function! s:Highlight(group, fgbg, r, g, b)
 endfunction
 
 function! s:HighlightString(group, fgbg, value)
-    execute(printf("highlight %s %s=%s", a:group, 'gui' . a:fgbg, a:value))
+    execute(printf('highlight %s %s=%s', a:group, 'gui' . a:fgbg, a:value))
 endfunction
 
 function! s:ForeachHighlightDirect(group, name, fgbg, arg1)
