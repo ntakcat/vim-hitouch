@@ -87,6 +87,28 @@ function! s:ForeachHighlight2(match, name, fgbg, arg1, arg2)
     endfor
 endfunction
 
+function! s:HighlightList()
+    let dst = []
+    let tmp = []
+    let l = ''
+    for i in split(execute('highlight'), '\n')
+	if stridx(i, ' ') != 0
+	    let tmp = add(tmp, i)
+	else
+	    let c = len(tmp) - 1
+	    let tmp[c] .= (' ' . substitute(i, '^\s*\(.*\)\s*$', '\1', ''))
+	endif
+    endfor
+    for i in tmp
+	let l = extend(['highlight '], split(i))
+	unlet l[2]
+	if match(l[2], 'link\|cleared') == -1
+	    let dst = add(dst, join(l))
+	endif
+    endfor
+    return dst
+endfunction
+
 function! s:BrightnessGroup(group, fgbg, percent)
     let [r, g, b] = s:GetRGB(s:GetCode(a:group, a:fgbg))
     let r = a:percent ? r + (255 - r) * a:percent / 100 : r
@@ -571,4 +593,13 @@ function! hitouch#UnlinkGroupBG(group)
 endfunction
 function! hitouch#UnlinkGroupFGBG(group, fgbg)
     call s:ForeachHighlightForce0(a:group, 'Unlink', a:fgbg)
+endfunction
+
+function! hitouch#SaveHighlight()
+    call writefile(s:HighlightList(), expand('~/.hitouchrc'))
+endfunction
+function! hitouch#LoadHighlight()
+    if filereadable(expand('~/.hitouchrc'))
+	execute('source ' . expand('~/.hitouchrc'))
+    endif
 endfunction

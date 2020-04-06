@@ -105,3 +105,6 @@ command! -nargs=+ HiPasteGroupBG call hitouch#PasteGroupBG(<f-args>)
 command! -nargs=+ HiUnlinkGroup call hitouch#UnlinkGroup(<f-args>)
 command! -nargs=+ HiUnlinkGroupFG call hitouch#UnlinkGroupFG(<f-args>)
 command! -nargs=+ HiUnlinkGroupBG call hitouch#UnlinkGroupBG(<f-args>)
+
+command! HiSave call hitouch#SaveHighlight()
+command! HiLoad call hitouch#LoadHighlight()
